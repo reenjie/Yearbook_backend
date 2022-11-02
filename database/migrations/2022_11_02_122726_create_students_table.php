@@ -13,14 +13,22 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sections', function (Blueprint $table) {
+        Schema::create('students', function (Blueprint $table) {
             $table->id();
+            $table->string("Firstname");
+            $table->string("Lastname");
+            $table->string("Email")->nullable();
+            $table->string("Contact")->nullable();
             $table->foreignId('Batch_ID')
             ->constrained('batches')
             ->onUpdate('cascade')
             ->onDelete('cascade');
-            $table->string('Name');
-            $table->text('Description');
+            $table->foreignId('Section_ID')
+            ->constrained('sections')
+            ->onUpdate('cascade')
+            ->onDelete('cascade');
+            $table->text('Honors')->nullable();
+            $table->text('photo')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +40,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sections');
+        Schema::dropIfExists('students');
     }
 };

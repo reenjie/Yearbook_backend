@@ -15,6 +15,9 @@ return new class extends Migration
     {
         Schema::create('batches', function (Blueprint $table) {
             $table->id();
+            $table->string('Name');
+            $table->date('Year');
+            $table->text('Description')->nullable();
             $table->timestamps();
         });
     }
