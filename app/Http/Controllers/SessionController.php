@@ -7,79 +7,87 @@ use Illuminate\Http\Request;
 
 class SessionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
+        try {
+
+            $data = Session::all();
+   
+           return response()->json([
+               'status' => 200,
+               'data' => $data,
+           ]);
+               
+           } catch (\Throwable $th) {
+   
+            return $th;
+           }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+  
     public function store(Request $request)
     {
-        //
+           try {
+            $data = new Session;
+
+            $data ->Batch_ID                    = $request->body['Batch_ID'];
+            $data->created_at                   = now();
+            $data->updated_at                   = now();
+            $data->save();
+            
+            return response()->json([
+                'status' => 200,
+                'message' => 'Added succesfully',
+            ]);
+
+        } catch (\Throwable $th) {
+
+            return $th;
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Session  $session
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Session $session)
+   
+   
+    public function update(Request $request)
     {
-        //
+        try {
+
+            $id = $request->params;
+            $data = Session::find($id);
+
+            $data ->Batch_ID                    = $request->body['Batch_ID'];
+            $data->updated_at                   = now();
+          
+            $data->save();
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Updated successfully',
+            ]);
+            
+        } catch (\Throwable $th) {
+
+            return $th;
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Session  $session
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Session $session)
+   
+    public function destroy(Request $request)
     {
-        //
-    }
+        try {
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Session  $session
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Session $session)
-    {
-        //
-    }
+            $data = Session::findOrFail($request->id);
+            $data -> delete();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Session  $session
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Session $session)
-    {
-        //
+            return response()->json([
+                'status' => 200,
+                'message' => 'Deleted successfully',
+            ]);
+            
+        } catch (\Throwable $th) {
+
+            return $th;
+        }
+       
     }
 }

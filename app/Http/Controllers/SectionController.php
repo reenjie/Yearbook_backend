@@ -7,79 +7,89 @@ use Illuminate\Http\Request;
 
 class SectionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
+        try {
+
+            $data = Section::all();
+   
+           return response()->json([
+               'status' => 200,
+               'data' => $data,
+           ]);
+               
+           } catch (\Throwable $th) {
+   
+            return $th;
+           }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+  
     public function store(Request $request)
     {
-        //
+           try {
+            $data = new Section;
+
+            $data ->Batch_ID                    = $request->body['Batch_ID'];
+            $data ->Name                        = $request->body['Name'];
+            $data ->Description                 = $request->body['Description'];
+            $data->created_at                   = now();
+            $data->updated_at                   = now();
+            $data->save();
+            
+            return response()->json([
+                'status' => 200,
+                'message' => 'Added succesfully',
+            ]);
+
+        } catch (\Throwable $th) {
+
+            return $th;
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Section  $section
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Section $section)
+   
+   
+    public function update(Request $request)
     {
-        //
+        try {
+
+            $id = $request->params;
+            $data = Section::find($id);
+
+            $data ->Batch_ID                    = $request->body['Batch_ID'];
+            $data ->Name                        = $request->body['Name'];
+            $data ->Description                 = $request->body['Description'];
+            $data->updated_at                   = now();
+          
+            $data->save();
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Updated successfully',
+            ]);
+            
+        } catch (\Throwable $th) {
+            return $th;
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Section  $section
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Section $section)
+   
+    public function destroy(Request $request)
     {
-        //
-    }
+        try {
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Section  $section
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Section $section)
-    {
-        //
-    }
+            $data = Section::findOrFail($request->id);
+            $data -> delete();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Section  $section
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Section $section)
-    {
-        //
+            return response()->json([
+                'status' => 200,
+                'message' => 'Deleted successfully',
+            ]);
+            
+        } catch (\Throwable $th) {
+            return $th;
+        }
+       
     }
 }

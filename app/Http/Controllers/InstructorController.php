@@ -2,84 +2,109 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Instructor;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class InstructorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
+        try {
+
+            $data = User::where('UserType',1)->get();
+   
+           return response()->json([
+               'status' => 200,
+               'data' => $data,
+           ]);
+               
+           } catch (\Throwable $th) {
+            return $th;
+           }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+  
     public function store(Request $request)
     {
-        //
+           try {
+            $data = new User;
+
+            $data ->Firstname              = $request->body['Firstname'];
+            $data ->Lastname               = $request->body['Lastname'];
+            $data ->Email                  = $request->body['Email'];
+            $data ->Contact                = $request->body['Contact'];
+            $data ->isVerified             = $request->body['isVerified'];
+            $data ->Payment                = $request->body['Payment'];
+            $data ->UserType               = 1;
+            $data ->firstlogin             = $request->body['firstlogin'];
+            $data ->Payment_Method         = $request->body['Payment_Method'];
+            $data ->Password               = $request->body['Password'];
+            $data->created_at              = now();
+            $data->updated_at              = now();
+            $data->save();
+            
+            return response()->json([
+                'status' => 200,
+                'message' => 'Added succesfully',
+            ]);
+
+        } catch (\Throwable $th) {
+
+            return $th;
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Instructor  $instructor
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Instructor $instructor)
+   
+   
+    public function update(Request $request)
     {
-        //
+        try {
+
+            $id = $request->params;
+            $data = User::find($id);
+
+            $data ->Firstname              = $request->body['Firstname'];
+            $data ->Lastname               = $request->body['Lastname'];
+            $data ->Email                  = $request->body['Email'];
+            $data ->Contact                = $request->body['Contact'];
+            $data ->isVerified             = $request->body['isVerified'];
+            $data ->Payment                = $request->body['Payment'];
+            $data ->UserType               = 1;
+            $data ->firstlogin             = $request->body['firstlogin'];
+            $data ->Payment_Method         = $request->body['Payment_Method'];
+            $data ->Password               = $request->body['Password'];
+            $data->updated_at              = now();
+          
+            $data->save();
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Updated successfully',
+            ]);
+            
+        } catch (\Throwable $th) {
+            return $th;
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Instructor  $instructor
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Instructor $instructor)
+   
+    public function destroy(Request $request)
     {
-        //
-    }
+        try {
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Instructor  $instructor
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Instructor $instructor)
-    {
-        //
-    }
+            $data = User::findOrFail($request->id);
+            $data -> delete();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Instructor  $instructor
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Instructor $instructor)
-    {
-        //
+            return response()->json([
+                'status' => 200,
+                'message' => 'Deleted successfully',
+            ]);
+            
+        } catch (\Throwable $th) {
+
+            return $th;
+           
+        }
+       
     }
 }

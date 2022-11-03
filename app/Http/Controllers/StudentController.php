@@ -2,84 +2,106 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Batch;
+use App\Models\Students;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
+        try {
+
+            $data = Students::all();
+   
+           return response()->json([
+               'status' => 200,
+               'data' => $data,
+           ]);
+               
+           } catch (\Throwable $th) {
+   
+            return $th;
+           }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+  
     public function store(Request $request)
     {
-        //
+           try {
+            $data = new Students;
+
+            $data ->Firstname              = $request->body['Firstname'];
+            $data ->Lastname               = $request->body['Lastname'];
+            $data ->Email                  = $request->body['Email'];
+            $data ->Contact                = $request->body['Contact'];
+            $data ->Batch_ID               = $request->body['Batch_ID'];
+            $data ->Section_ID             = $request->body['Section_ID'];
+            $data ->Honors                 = $request->body['Honors'];
+            $data ->photo                  = $request->body['photo'];
+            $data->created_at              = now();
+            $data->updated_at              = now();
+            $data->save();
+            
+            return response()->json([
+                'status' => 200,
+                'message' => 'Added succesfully',
+            ]);
+
+        } catch (\Throwable $th) {
+            return $th;
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Batch  $batch
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Batch $batch)
+   
+   
+    public function update(Request $request)
     {
-        //
+        try {
+
+            $id = $request->params;
+            $data = Students::find($id);
+
+            $data ->Firstname              = $request->body['Firstname'];
+            $data ->Lastname               = $request->body['Lastname'];
+            $data ->Email                  = $request->body['Email'];
+            $data ->Contact                = $request->body['Contact'];
+            $data ->Batch_ID               = $request->body['Batch_ID'];
+            $data ->Section_ID             = $request->body['Section_ID'];
+            $data ->Honors                 = $request->body['Honors'];
+            $data ->photo                  = $request->body['photo'];
+            $data->updated_at                   = now();
+          
+            $data->save();
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Updated successfully',
+            ]);
+            
+        } catch (\Throwable $th) {
+
+            return $th;
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Batch  $batch
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Batch $batch)
+   
+    public function destroy(Request $request)
     {
-        //
-    }
+        try {
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Batch  $batch
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Batch $batch)
-    {
-        //
-    }
+            $data = Students::findOrFail($request->id);
+            $data -> delete();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Batch  $batch
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Batch $batch)
-    {
-        //
+            return response()->json([
+                'status' => 200,
+                'message' => 'Deleted successfully',
+            ]);
+            
+        } catch (\Throwable $th) {
+
+            return $th;
+           
+        }
+       
     }
 }
