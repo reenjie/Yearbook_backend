@@ -27,6 +27,7 @@ class UserController extends Controller
   
     public function store(Request $request)
     {
+    
            try {
             $data = new User;
 
@@ -34,6 +35,10 @@ class UserController extends Controller
             $data ->Lastname               = $request->body['Lastname'];
             $data ->Email                  = $request->body['Email'];
             $data ->Contact                = $request->body['Contact'];
+            $data->Gender                  = $request->body['Gender'];
+            $data-> Address                = $request->body['Address'];
+            $data-> Section_ID             = $request->body['Section_ID'];
+            $data-> Batch_ID               = $request->body['Batch_ID'];
             $data ->isVerified             = $request->body['isVerified'];
             $data ->Payment                = $request->body['Payment'];
             $data ->UserType               = $request->body['UserType'];
@@ -51,7 +56,10 @@ class UserController extends Controller
 
         } catch (\Throwable $th) {
 
-            return $th;
+            return response()->json([
+                'status'=>500,
+                'message'=>$th,
+            ]);
         }
     }
 
@@ -92,8 +100,10 @@ class UserController extends Controller
    
     public function destroy(Request $request)
     {
+     
         try {
-
+        
+          
             $data = User::findOrFail($request->id);
             $data -> delete();
 
@@ -103,7 +113,7 @@ class UserController extends Controller
             ]);
             
         } catch (\Throwable $th) {
-
+            
             return $th;
         }
        

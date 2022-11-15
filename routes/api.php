@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
  */
 
 
-Route::namespace('App\Http\Controllers\Admin')->prefix('admin')->name('admin.')->group(function () {
+Route::namespace('App\Http\Controllers')->prefix('admin')->name('admin.')->group(function () {
    
 //Batch
     Route::get('batch', 'BatchController@index');         //Index
