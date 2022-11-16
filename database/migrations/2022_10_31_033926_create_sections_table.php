@@ -15,10 +15,6 @@ return new class extends Migration
     {
         Schema::create('sections', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('Batch_ID')
-            ->constrained('batches')
-            ->onUpdate('cascade')
-            ->onDelete('cascade');
             $table->string('Name');
             $table->text('Description');
             $table->timestamps();

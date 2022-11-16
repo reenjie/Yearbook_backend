@@ -76,6 +76,10 @@ class UserController extends Controller
             $data ->Lastname               = $request->body['Lastname'];
             $data ->Email                  = $request->body['Email'];
             $data ->Contact                = $request->body['Contact'];
+            $data->Gender                  = $request->body['Gender'];
+            $data-> Address                = $request->body['Address'];
+            $data-> Section_ID             = $request->body['Section_ID'];
+            $data-> Batch_ID               = $request->body['Batch_ID'];
             $data ->isVerified             = $request->body['isVerified'];
             $data ->Payment                = $request->body['Payment'];
             $data ->UserType               = $request->body['UserType'];

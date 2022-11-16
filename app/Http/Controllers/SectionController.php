@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Section;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 class SectionController extends Controller
 {
     public function index()
@@ -24,13 +24,27 @@ class SectionController extends Controller
            }
     }
 
+    public function customSelect(){
+        try {
+
+            $data = DB::select('select id as value, Name as label from sections');
+   
+           return response()->json([
+               'status' => 200,
+               'data' => $data,
+           ]);
+               
+           } catch (\Throwable $th) {
+   
+            return $th;
+           }
+    }   
   
     public function store(Request $request)
     {
            try {
             $data = new Section;
 
-            $data ->Batch_ID                    = $request->body['Batch_ID'];
             $data ->Name                        = $request->body['Name'];
             $data ->Description                 = $request->body['Description'];
             $data->created_at                   = now();
@@ -44,7 +58,10 @@ class SectionController extends Controller
 
         } catch (\Throwable $th) {
 
-            return $th;
+            return response()->json([
+                'status'=>500,
+                'message'=>$th,
+            ]);
         }
     }
 
@@ -56,8 +73,7 @@ class SectionController extends Controller
 
             $id = $request->params;
             $data = Section::find($id);
-
-            $data ->Batch_ID                    = $request->body['Batch_ID'];
+ 
             $data ->Name                        = $request->body['Name'];
             $data ->Description                 = $request->body['Description'];
             $data->updated_at                   = now();

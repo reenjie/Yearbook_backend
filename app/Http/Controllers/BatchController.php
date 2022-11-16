@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Batch;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 class BatchController extends Controller
 {
     
@@ -22,6 +22,23 @@ class BatchController extends Controller
            } catch (\Throwable $th) {
             return $th;
            }
+    }
+
+    public function getBatch(){
+        try {
+          
+          
+            $data = DB::select('select id as value, Name as label from batches');
+          
+          
+          return response()->json([
+            'status' => 200,
+            'data' => $data,
+        ]);
+            
+        } catch (\Throwable $th) {
+           return $th;
+        }
     }
 
   

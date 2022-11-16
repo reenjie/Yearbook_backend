@@ -25,6 +25,9 @@ Route::namespace('App\Http\Controllers')->prefix('admin')->name('admin.')->group
    
 //Batch
     Route::get('batch', 'BatchController@index');         //Index
+    Route::get('batch/Custom', 'BatchController@getBatch'); 
+
+    
     Route::post('batch', 'BatchController@store');        //Create
   /*   Route::get('batch/{id}', 'DoctorController@show');     //Read */
     Route::put('batch', 'BatchController@update');        //Update
@@ -43,6 +46,8 @@ Route::namespace('App\Http\Controllers')->prefix('admin')->name('admin.')->group
 
 //Section
     Route::get('section', 'SectionController@index');         //Index
+    Route::get('custom_section_select', 'SectionController@customSelect'); 
+   
     Route::post('section', 'SectionController@store');        //Create
     /*   Route::get('batch/{id}', 'DoctorController@show');     //Read */
     Route::put('section', 'SectionController@update');        //Update
