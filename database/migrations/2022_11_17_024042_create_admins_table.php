@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string("Firstname");
             $table->string("Middlename");
             $table->string("Lastname");
-            $table->string("Contact") -> nullable();
+            $table->string("Sex");
             $table->foreignId("FK_user_ID") 
             ->constrained('users')
             ->onUpdate('cascade')

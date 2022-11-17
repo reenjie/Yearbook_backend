@@ -13,7 +13,7 @@ class Admin extends Model
         'Firstname',
         'Middlename',
         'Lastname',
-        'Contact',
+        'Sex',
         'FK_user_ID',
     ];
     

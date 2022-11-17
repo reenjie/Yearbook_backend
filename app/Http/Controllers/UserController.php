@@ -8,8 +8,11 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Role;
 use App\Models\student;
 use App\Models\Admin;
+use App\Models\User;
 use App\Models\instructor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -32,26 +35,31 @@ class UserController extends Controller
            }
     }
 
-    public function login(Request $request)
+    public function signin(Request $request)
     {
     
            try {
+
+            $credentials = [
+                'email' => $request -> body['Email'],
+                'password' => $request -> body['Password'],
+            ];
+
+            if (!Auth::attempt($credentials)) {    
+                return response()->json([
+                    'status' => 403,
+                    'errors' => 'Email or password incorrect'
+                ]);
+            }
+            
             $data = DB::SELECT("SELECT u.id,u.email, u.profile, u.isVerified, r.name as role FROM users u 
-                    JOIN roles r ON r.id = u.FK_role_ID WHERE u.email = ?", [$request -> body['email']]);
+                    JOIN roles r ON r.id = u.FK_role_ID WHERE u.email = ?", [$request -> body['Email']]);
 
             if(!$data ){
                 return response()->json([
                     'status' => 404,
                     'message' => 'Account not found.',
                 ]);
-            }
-
-            if (!Auth::attempt(['email' => $request ->body['email'] , 'password' => $request -> body['password']])) {    
-                return response()->json([
-                    'status' => 403,
-                    'errors' => 'Email or password incorrect'
-                ]);
-
             }
 
             /**
@@ -61,7 +69,7 @@ class UserController extends Controller
              * means the the user has an account for authentication
              * but doesn't have a user information record on instructor table
              */
-            if($data[0] -> role == 1){
+            if($data[0] -> role == 2){
                 $instructor = Instructor::find($data[0] -> id);
 
                 if(!$instructor){
@@ -93,7 +101,7 @@ class UserController extends Controller
              * means the the user has an account for authentication
              * but doesn't have a user information record on students table
              */
-            if($data[0] -> role == 2){
+            if($data[0] -> role == 3){
                 $student = Students::find();
                 
                 if(!$instructor){
@@ -159,28 +167,30 @@ class UserController extends Controller
         }
     }
 
-    public function register(Request $request)
+    public function signup(Request $request)
     {
     
            try {
+
             $user = new User;
 
             $user ->Email                  = $request->body['Email'];
-            $user ->isVerified             = $request->body['isVerified'];
-            $user ->role                   = $request->body['role'];
+            $user ->isVerified             = false;
+            $user ->FK_role_ID             = $request->body['role'];
             $user ->profile                = $request->body['profile'];
             $user ->Password               = Hash::make($request->body['Password']);
             $user ->created_at             = now();
             $user ->updated_at             = now();
             $user ->save();
 
-            if($user -> role == 1){
+
+            if($user -> FK_role_ID == 1){
                 $data = new Admin;
     
                 $data ->Firstname              = $request->body['Firstname'];
                 $data ->Middlename             = $request->body['Middlename'];
                 $data ->Lastname               = $request->body['Lastname'];
-                $data ->Contact                = $request->body['Contact'];
+                $data ->Sex                    = $request->body['Sex'];
                 $data ->FK_user_ID             = $user -> id;
                 $data->created_at              = now();
                 $data->updated_at              = now();
@@ -201,10 +211,8 @@ class UserController extends Controller
             $data ->Firstname              = $request->body['Firstname'];
             $data ->Middlename             = $request->body['Middlename'];
             $data ->Lastname               = $request->body['Lastname'];
-            $data ->Contact                = $request->body['Contact'];
-            $data ->isVerified             = $request->body['isVerified'];
+            $data ->Sex                    = $request->body['Sex'];
             $data ->FK_user_ID             = $user -> id;
-            $data ->Fk_section_ID          = $request->body['FK_section_ID'];
             $data->created_at              = now();
             $data->updated_at              = now();
             $data->save();

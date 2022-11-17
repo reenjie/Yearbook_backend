@@ -20,8 +20,14 @@ use Illuminate\Support\Facades\Route;
 
  */
 
+ 
+Route::namespace('App\Http\Controllers') -> prefix('auth') ->name('auth.')->group(function () {
+    Route::post('signup', 'UserController@signup');        //Create
+    Route::post('signin', 'UserController@signin');        //Authenticate
+});
 
-Route::namespace('App\Http\Controllers')->prefix('admin')->name('admin.')->group(function () {
+
+Route::namespace('App\Http\Controllers')->group(function () {
    
 //Batch
     Route::get('batch', 'BatchController@index');         //Index
@@ -30,13 +36,22 @@ Route::namespace('App\Http\Controllers')->prefix('admin')->name('admin.')->group
     
     Route::post('batch', 'BatchController@store');        //Create
   /*   Route::get('batch/{id}', 'DoctorController@show');     //Read */
+  
     Route::put('batch', 'BatchController@update');        //Update
     Route::delete('batch', 'BatchController@destroy');   //delete
+
+    
+    Route::get('instructor', 'InstructorController@index');     //Read
+    Route::get('instructor/selection', 'InstructorController@indexSelection');     //Read
+    Route::post('instructor', 'InstructorController@store');        //Create
+  /*   Route::get('batch/{id}', 'DoctorController@show');     //Read */
+  
+    Route::put('instructor', 'InstructorController@update');        //Update
+    Route::delete('instructor', 'InstructorController@destroy');   //delete
 
 
 //User
     Route::get('user', 'UserController@index');         //Index
-    Route::post('user', 'UserController@store');        //Create
    /*   Route::get('batch/{id}', 'DoctorController@show');     //Read */
     Route::put('user', 'UserController@update');        //Update
     Route::delete('user', 'UserController@destroy');   //delete
@@ -47,9 +62,8 @@ Route::namespace('App\Http\Controllers')->prefix('admin')->name('admin.')->group
 //Section
     Route::get('section', 'SectionController@index');         //Index
     Route::get('custom_section_select', 'SectionController@customSelect'); 
-   
     Route::post('section', 'SectionController@store');        //Create
-    /*   Route::get('batch/{id}', 'DoctorController@show');     //Read */
+    Route::get('section/{id}', 'DoctorController@show');     //Read */
     Route::put('section', 'SectionController@update');        //Update
     Route::delete('section', 'SectionController@destroy');   //delete
 
@@ -68,7 +82,4 @@ Route::namespace('App\Http\Controllers')->prefix('admin')->name('admin.')->group
     /*   Route::get('batch/{id}', 'DoctorController@show');     //Read */
     Route::put('session', 'SessionController@update');        //Update
     Route::delete('session', 'SessionController@destroy');   //delete
-                   
-  
-
 });

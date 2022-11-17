@@ -13,7 +13,7 @@ class Instructor extends Model
         'Firstname',
         'Middlename',
         'Lastname',
-        'Contact',
+        'Sex',
         'FK_user_ID',
         'FK_section_ID',
     ];

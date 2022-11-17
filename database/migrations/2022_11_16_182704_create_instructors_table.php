@@ -18,13 +18,13 @@ return new class extends Migration
             $table->string("Firstname");
             $table->string("Middlename");
             $table->string("Lastname");
-            $table->string("Contact") -> nullable();
+            $table->string("Sex");
             $table->foreignId("FK_user_ID") 
             ->constrained('users')
             ->onUpdate('cascade')
             ->onDelete('cascade');
-            $table->foreignId("FK_section_ID") 
-            ->constrained('sections')
+            $table->foreignId("FK_section_ID") -> default(null) -> nullable()
+            ->constrained('sections') 
             ->onUpdate('cascade')
             ->onDelete('cascade');
             $table->timestamps();

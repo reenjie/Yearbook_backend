@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Instructor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InstructorController extends Controller
 {
@@ -16,7 +17,31 @@ class InstructorController extends Controller
     {
         try {
 
-            $data = Instructor::all();
+            $data = DB::select('SELECT * FROM `instructors` i JOIN users u on u.id = i.FK_user_ID;');
+   
+            return response()->json([
+                'status' => 200,
+                'data' => $data,
+            ]);
+               
+           } catch (\Throwable $th) {
+            return response() -> json([
+                'status' => 500,
+                'message' => $th -> getMessage()
+            ]);
+           }
+    }
+    
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexSelection()
+    {
+        try {
+
+            $data = DB::select('SELECT id, Concat(Firstname ," ", Middlename ," ", Lastname ) as name FROM `instructors`;');
    
             return response()->json([
                 'status' => 200,
@@ -45,7 +70,7 @@ class InstructorController extends Controller
 
             $user ->Email                  = $request->body['Email'];
             $user ->isVerified             = $request->body['isVerified'];
-            $user ->role                   = $request->body['role'];
+            $user ->role                   = 2;
             $user ->profile                = $request->body['profile'];
             $user ->Password               = Hash::make($request->body['Password']);
             $user ->created_at             = now();
@@ -57,8 +82,7 @@ class InstructorController extends Controller
             $data ->Firstname              = $request->body['Firstname'];
             $data ->Middlename             = $request->body['Middlename'];
             $data ->Lastname               = $request->body['Lastname'];
-            $data ->Contact                = $request->body['Contact'];
-            $data ->isVerified             = $request->body['isVerified'];
+            $data ->Sex                    = $request->body['Sex'];
             $data ->FK_user_ID             = $user -> id;
             $data ->Fk_section_ID          = $request->body['FK_section_ID'];
             $data->created_at              = now();
@@ -121,9 +145,7 @@ class InstructorController extends Controller
             $data ->Firstname              = $request->body['Firstname'];
             $data ->Middlename             = $request->body['Middlename'];
             $data ->Lastname               = $request->body['Lastname'];
-            $data ->Email                  = $request->body['Email'];
-            $data ->Contact                = $request->body['Contact'];
-            $data ->isVerified             = $request->body['isVerified'];
+            $data ->Sex                    = $request->body['Sex'];
             $data ->FK_user_ID             = $request->body['FK_user_ID'];
             $data ->updated_at              = now();
           
