@@ -19,8 +19,10 @@ class SectionController extends Controller
            ]);
                
            } catch (\Throwable $th) {
-   
-            return $th;
+                return response()->json([
+                    'status'=>500,
+                    'message'=>$th -> getMessage(),
+                ]);
            }
     }
 
@@ -36,20 +38,23 @@ class SectionController extends Controller
                
            } catch (\Throwable $th) {
    
-            return $th;
+            return response() -> json([
+                'status' => 500,
+                'message' =>$th -> getMessage()
+            ]);
            }
     }   
   
     public function store(Request $request)
     {
-           try {
+        try {
             $data = new Section;
 
             $data ->Name                        = $request->body['Name'];
             $data ->Description                 = $request->body['Description'];
-            $data->created_at                   = now();
-            $data->updated_at                   = now();
-            $data->save();
+            $data ->created_at                   = now();
+            $data ->updated_at                   = now();
+            $data ->save();
             
             return response()->json([
                 'status' => 200,
@@ -60,11 +65,37 @@ class SectionController extends Controller
 
             return response()->json([
                 'status'=>500,
-                'message'=>$th,
+                'message'=>$th -> getMessage(),
             ]);
         }
     }
 
+    
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\section  $admin
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Request $request)
+    {
+        try {
+            $id = $request -> params;
+            $data = Section::findOrFail($id);
+
+            return response()->json([
+                'status' => 200,
+                'data' => $data,
+            ]);
+            
+        } catch (\Throwable $th) {
+            return response() -> json([
+                'status' => 500,
+                'message' => $th -> getMessage()
+            ]);
+        }
+    }
    
    
     public function update(Request $request)
@@ -86,7 +117,10 @@ class SectionController extends Controller
             ]);
             
         } catch (\Throwable $th) {
-            return $th;
+            return response()->json([
+                'status'=>500,
+                'message'=>$th -> getMessage(),
+            ]);
         }
     }
 
@@ -95,6 +129,7 @@ class SectionController extends Controller
     {
         try {
 
+            $id = $request -> params;
             $data = Section::findOrFail($request->id);
             $data -> delete();
 
@@ -104,7 +139,10 @@ class SectionController extends Controller
             ]);
             
         } catch (\Throwable $th) {
-            return $th;
+            return response()->json([
+                'status'=>500,
+                'message'=>$th -> getMessage(),
+            ]);
         }
        
     }

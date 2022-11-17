@@ -13,11 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('batches', function (Blueprint $table) {
+        Schema::create('admins', function (Blueprint $table) {
             $table->id();
-            $table->string('Name');
-            $table->text('Description')->nullable();
-            $table->date('Year');
+            $table->string("Firstname");
+            $table->string("Middlename");
+            $table->string("Lastname");
+            $table->string("Contact") -> nullable();
+            $table->foreignId("FK_user_ID") 
+            ->constrained('users')
+            ->onUpdate('cascade')
+            ->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -29,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('batches');
+        Schema::dropIfExists('admins');
     }
 };

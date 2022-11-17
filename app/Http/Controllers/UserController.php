@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+
+use App\Models\Role;
+use App\Models\student;
+use App\Models\Admin;
+use App\Models\instructor;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -19,50 +25,234 @@ class UserController extends Controller
            ]);
                
            } catch (\Throwable $th) {
-   
-            return $th;
+                return response()->json([
+                    'status'=>500,
+                    'message'=>$th -> getMessage(),
+                ]);
            }
     }
 
-  
-    public function store(Request $request)
+    public function login(Request $request)
     {
     
            try {
-            $data = new User;
+            $data = DB::SELECT("SELECT u.id,u.email, u.profile, u.isVerified, r.name as role FROM users u 
+                    JOIN roles r ON r.id = u.FK_role_ID WHERE u.email = ?", [$request -> body['email']]);
 
-            $data ->Firstname              = $request->body['Firstname'];
-            $data ->Lastname               = $request->body['Lastname'];
-            $data ->Email                  = $request->body['Email'];
-            $data ->Contact                = $request->body['Contact'];
-            $data->Gender                  = $request->body['Gender'];
-            $data-> Address                = $request->body['Address'];
-            $data-> Section_ID             = $request->body['Section_ID'];
-            $data-> Batch_ID               = $request->body['Batch_ID'];
-            $data ->isVerified             = $request->body['isVerified'];
-            $data ->Payment                = $request->body['Payment'];
-            $data ->UserType               = $request->body['UserType'];
-            $data ->firstlogin             = $request->body['firstlogin'];
-            $data ->Payment_Method         = $request->body['Payment_Method'];
-            $data ->Password               = $request->body['Password'];
-            $data->created_at              = now();
-            $data->updated_at              = now();
-            $data->save();
+            if(!$data ){
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Account not found.',
+                ]);
+            }
+
+            if (!Auth::attempt(['email' => $request ->body['email'] , 'password' => $request -> body['password']])) {    
+                return response()->json([
+                    'status' => 403,
+                    'errors' => 'Email or password incorrect'
+                ]);
+
+            }
+
+            /**
+             * if role is 2 or Instructor 
+             * then fetch in instructor table
+             * if data not found response status 404 account doesn't exist
+             * means the the user has an account for authentication
+             * but doesn't have a user information record on instructor table
+             */
+            if($data[0] -> role == 1){
+                $instructor = Instructor::find($data[0] -> id);
+
+                if(!$instructor){
+                    return response()->json([
+                        'status' => 404,
+                        'message' => 'Account exist but user information missing.',
+                    ]);
+                }
+                
+                $user = Auth::user();
+                $token =  $user->createToken('year_book');
+                $success['token']   =  $token -> accessToken; 
+                $success['role']    =  $data[0] -> role;
+                $success['name']    =  $instructor->name;
+                $success['email']   =  $user->email;
+                $success['profile'] =  $user->profile;
+                $success['loggedIn'] = true;
+
+                return response()->json([
+                    'status' => 200,
+                    'data'=> $success,
+                ]);
+            }
             
+            /**
+             * if role is 2 or students 
+             * then fetch in student table
+             * if data not found response status 404 account doesn't exist
+             * means the the user has an account for authentication
+             * but doesn't have a user information record on students table
+             */
+            if($data[0] -> role == 2){
+                $student = Students::find();
+                
+                if(!$instructor){
+                    return response()->json([
+                        'status' => 404,
+                        'message' => 'Account exist but user information missing.',
+                    ]);
+                }
+
+                $user = Auth::user();
+                $token =  $user->createToken('year_book');
+                $success['token']   =  $token -> accessToken; 
+                $success['role']    =  $data[0] -> role;
+                $success['name']    =  $student->name;
+                $success['email']   =  $user->email;
+                $success['profile'] =  $user->profile;
+                $success['loggedIn'] = true;
+
+                return response()->json([
+                    'status' => 200,
+                    'data'=> $success,
+                ]);
+            }
+
+
+            /**
+             * if role is not 2 or 3  
+             * then fetch in admin table
+             * if data not found response status 404 account doesn't exist
+             * means the the user has an account for authentication
+             * but doesn't have a user information record on admin table
+             */
+
+            $admin = Admin::find();
+        
+            if(!$admin){
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Account exist but user information missing.',
+                ]);
+            }
+
+            $user = Auth::user();
+            $token =  $user->createToken('year_book');
+            $success['token']   =  $token -> accessToken; 
+            $success['role']    =  $data[0] -> role;
+            $success['name']    =  $admin->name;
+            $success['email']   =  $user->email;
+            $success['profile'] =  $user->profile;
+            $success['loggedIn'] = true;
+
             return response()->json([
                 'status' => 200,
-                'message' => 'Added succesfully',
+                'data'=> $success,
             ]);
 
         } catch (\Throwable $th) {
 
             return response()->json([
                 'status'=>500,
-                'message'=>$th,
+                'message'=>$th -> getMessage(),
             ]);
         }
     }
 
+    public function register(Request $request)
+    {
+    
+           try {
+            $user = new User;
+
+            $user ->Email                  = $request->body['Email'];
+            $user ->isVerified             = $request->body['isVerified'];
+            $user ->role                   = $request->body['role'];
+            $user ->profile                = $request->body['profile'];
+            $user ->Password               = Hash::make($request->body['Password']);
+            $user ->created_at             = now();
+            $user ->updated_at             = now();
+            $user ->save();
+
+            if($user -> role == 1){
+                $data = new Admin;
+    
+                $data ->Firstname              = $request->body['Firstname'];
+                $data ->Middlename             = $request->body['Middlename'];
+                $data ->Lastname               = $request->body['Lastname'];
+                $data ->Contact                = $request->body['Contact'];
+                $data ->FK_user_ID             = $user -> id;
+                $data->created_at              = now();
+                $data->updated_at              = now();
+                $data->save();
+    
+                /**
+                 * on success return status 200
+                 * user will not redirect to home until his acconut is approve
+                 */
+                return response()->json([
+                    'status' => 200,
+                    'message'=> 'Account added successfuly your account is currently pending',
+                ]);
+            }
+            
+            $data = new Instructor;
+
+            $data ->Firstname              = $request->body['Firstname'];
+            $data ->Middlename             = $request->body['Middlename'];
+            $data ->Lastname               = $request->body['Lastname'];
+            $data ->Contact                = $request->body['Contact'];
+            $data ->isVerified             = $request->body['isVerified'];
+            $data ->FK_user_ID             = $user -> id;
+            $data ->Fk_section_ID          = $request->body['FK_section_ID'];
+            $data->created_at              = now();
+            $data->updated_at              = now();
+            $data->save();
+
+
+            /**
+             * on success return status 200
+             * user will not redirect to home until his acconut is approve
+             */
+            return response()->json([
+                'status' => 200,
+                'message'=> 'Account added successfuly your account is currently pending',
+            ]);
+
+        } catch (\Throwable $th) {
+
+            return response()->json([
+                'status'=>500,
+                'message'=>$th -> getMessage(),
+            ]);
+        }
+    }
+
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\user  $admin
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Request $request)
+    {
+        try {
+            $id = $request -> params;
+            $data = User::findOrFail($id);
+
+            return response()->json([
+                'status' => 200,
+                'data' => $data,
+            ]);
+            
+        } catch (\Throwable $th) {
+            return response() -> json([
+                'status' => 500,
+                'message' => $th -> getMessage()
+            ]);
+        }
+    }
    
    
     public function update(Request $request)
@@ -72,20 +262,11 @@ class UserController extends Controller
             $id = $request->params;
             $data = User::find($id);
 
-            $data ->Firstname              = $request->body['Firstname'];
-            $data ->Lastname               = $request->body['Lastname'];
             $data ->Email                  = $request->body['Email'];
-            $data ->Contact                = $request->body['Contact'];
-            $data->Gender                  = $request->body['Gender'];
-            $data-> Address                = $request->body['Address'];
-            $data-> Section_ID             = $request->body['Section_ID'];
-            $data-> Batch_ID               = $request->body['Batch_ID'];
             $data ->isVerified             = $request->body['isVerified'];
-            $data ->Payment                = $request->body['Payment'];
-            $data ->UserType               = $request->body['UserType'];
-            $data ->firstlogin             = $request->body['firstlogin'];
-            $data ->Payment_Method         = $request->body['Payment_Method'];
-            $data ->Password               = $request->body['Password'];
+            $data ->role                   = $request->body['role'];
+            $data ->profile                = $request->body['profile'];
+            $data ->Password               = Hash::make($request->body['Password']);
             $data->updated_at              = now();
           
             $data->save();
@@ -97,7 +278,10 @@ class UserController extends Controller
             
         } catch (\Throwable $th) {
 
-            return $th;
+            return response() -> json([
+                'status' => 500,
+                'message' => $th -> getMessage()
+            ]);
         }
     }
 
@@ -117,8 +301,10 @@ class UserController extends Controller
             ]);
             
         } catch (\Throwable $th) {
-            
-            return $th;
+            return response() -> json([
+                'status' => 500,
+                'message' => $th -> getMessage()
+            ]);
         }
        
     }

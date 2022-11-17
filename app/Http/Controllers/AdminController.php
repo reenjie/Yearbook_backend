@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Students;
+use App\Models\Admin;
 use Illuminate\Http\Request;
 
-class StudentController extends Controller
+class AdminController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         try {
-
-            $data = Students::all();
+            $data = Admin::all();
    
            return response()->json([
                'status' => 200,
@@ -19,23 +23,22 @@ class StudentController extends Controller
            ]);
                
            } catch (\Throwable $th) {
-   
-            return response() -> json([
-                'status' => 500,
-                'message' => $th -> getMessage()
+            return response()->json([
+                'status'=>500,
+                'message'=>$th -> getMessage(),
             ]);
            }
     }
 
     /**
-     * create a user account for student who avail the year book
-     * every account must be verified on creation of student account
-     * since students paid for it to avail year he/she will gain access
-     * to year book system
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function createStudentAccount(Request $request)
+    public function store(Request $request)
     {
-        try {
+        try{
             $user = new User;
 
             $user ->Email                  = $request->body['Email'];
@@ -46,74 +49,46 @@ class StudentController extends Controller
             $user ->created_at             = now();
             $user ->updated_at             = now();
             $user ->save();
-
-            $id = $request->params;
-            $data = Students::find($id);
-
-            $data ->FK_user_ID                  = $user -> id;
-            $data->updated_at                   = now();
-          
-            $data->save();
-
-            return response()->json([
-                'status' => 200,
-                'message' => 'Updated successfully',
-            ]);
+    
             
-        } catch (\Throwable $th) {
-
-            return response() -> json([
-                'status' => 500,
-                'message' => $th -> getMessage()
-            ]);
-        }
-    }
-
-  
-    public function store(Request $request)
-    {
-           try {
-            $data = new Students;
-
+            $data = new admin;
+        
             $data ->Firstname              = $request->body['Firstname'];
+            $data ->Middlename             = $request->body['Middlename'];
             $data ->Lastname               = $request->body['Lastname'];
-            $data ->Email                  = $request->body['Email'];
             $data ->Contact                = $request->body['Contact'];
-            $data ->Batch_ID               = $request->body['Batch_ID'];
-            $data ->Section_ID             = $request->body['Section_ID'];
-            $data ->Honors                 = $request->body['Honors'];
-            $data ->photo                  = $request->body['photo'];
-            $data ->sex                    = $request->body['sex'];
+            $data ->FK_user_ID             = $user -> id;
             $data->created_at              = now();
             $data->updated_at              = now();
             $data->save();
-            
+    
+            /**
+             * on success return status 200
+             * user will not redirect to home until his acconut is approve
+             */
             return response()->json([
                 'status' => 200,
-                'message' => 'Added succesfully',
+                'message'=> 'Account added successfuly your account is currently pending',
             ]);
-
-        } catch (\Throwable $th) {
-            return response() -> json([
-                'status' => 500,
-                'message' => $th -> getMessage()
+        }catch(\Throwable $th){
+            return response()->json([
+                'status'=>500,
+                'message'=>$th -> getMessage(),
             ]);
         }
     }
-
-    
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\students  $admin
+     * @param  \App\Models\admin  $admin
      * @return \Illuminate\Http\Response
      */
     public function show(Request $request)
     {
         try {
             $id = $request -> params;
-            $data = Student::findOrFail($id);
+            $data = Admin::findOrFail($id);
 
             return response()->json([
                 'status' => 200,
@@ -127,47 +102,49 @@ class StudentController extends Controller
             ]);
         }
     }
-   
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\admin  $admin
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
-    {
-        try {
+    {    
+        try{
 
             $id = $request->params;
-            $data = Students::find($id);
-
+            $data = Admin::find($id);
+        
             $data ->Firstname              = $request->body['Firstname'];
+            $data ->Middlename             = $request->body['Middlename'];
             $data ->Lastname               = $request->body['Lastname'];
-            $data ->Email                  = $request->body['Email'];
             $data ->Contact                = $request->body['Contact'];
-            $data ->Batch_ID               = $request->body['Batch_ID'];
-            $data ->Section_ID             = $request->body['Section_ID'];
-            $data ->Honors                 = $request->body['Honors'];
-            $data ->photo                  = $request->body['photo'];
-            $data ->sex                  = $request->body['sex'];
-            $data->updated_at                   = now();
-          
+            $data->updated_at              = now();
             $data->save();
-
+    
+            /**
+             * on success return status 200
+             * user will not redirect to home until his acconut is approve
+             */
             return response()->json([
                 'status' => 200,
-                'message' => 'Updated successfully',
+                'message'=> 'Account updated successfuly ',
             ]);
-            
-        } catch (\Throwable $th) {
-
+        }catch(\Throwable $th){
             return response() -> json([
                 'status' => 500,
                 'message' => $th -> getMessage()
             ]);
         }
-    }    
+    }
 
-   
     public function destroy(Request $request)
     {
         try {
-
-            $data = Students::findOrFail($request->id);
+            $id = $request -> params;
+            $data = Admin::findOrFail($id);
             $data -> delete();
 
             return response()->json([
@@ -181,8 +158,7 @@ class StudentController extends Controller
                 'status' => 500,
                 'message' => $th -> getMessage()
             ]);
-           
+        
         }
-       
     }
 }

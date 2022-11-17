@@ -11,6 +11,7 @@ class Students extends Model
 
     protected $fillable = [
         'Firstname',
+        'Middlename',
         'Lastname',
         'Email',
         'Contact',
@@ -18,5 +19,38 @@ class Students extends Model
         'Section_ID',
         'Honors',
         'photo',
+        'Sex',
+        'FK_user_ID',
     ];
+
+    /**
+     * Get the user that owns the Students
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function batch(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'Batch_ID');
+    }
+
+
+    /**
+     * Get the user that owns the Students
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function section(): BelongsTo
+    {
+        return $this->belongsTo(Section::class, 'Section_ID');
+    }
+
+    /**
+     * Get the user that owns the Students
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'FK_user_ID', );
+    }
 }
