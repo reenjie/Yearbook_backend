@@ -35,14 +35,127 @@ class UserController extends Controller
            }
     }
 
+    public function checkUserToken(Request $request){
+        try{
+
+            $requestData = $request -> user();
+
+            $data = DB::SELECT("SELECT u.id,u.email, u.profile, u.isVerified, r.name as role FROM users u 
+                    JOIN roles r ON r.id = u.FK_role_ID WHERE u.email = ?", [$requestData['email']]);
+
+            
+            if(!$data ){
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Account not found.',
+                ]);
+            }
+
+            if($data[0] -> role == 2){
+                $instructor = Instructor::find($data[0] -> id);
+
+                if(!$instructor){
+                    return response()->json([
+                        'status' => 404,
+                        'message' => 'Account exist but user information missing.',
+                    ]);
+                }
+                
+                
+                $name = $instructor['Firstname'].' '.$instructor['Middlename'].' '.$instructor['Lastname'];
+                
+                $success['role']    =  $data[0] -> role;
+                $success['name']    =  $name;
+                $success['email']   =  $requestData->email;
+                $success['profile'] =  $requestData->profile;
+                $success['loggedIn'] = true;
+
+                return response()->json([
+                    'status' => 200,
+                    'data'=> $success,
+                ]);
+            }
+            
+            /**
+             * if role is 2 or students 
+             * then fetch in student table
+             * if data not found response status 404 account doesn't exist
+             * means the the user has an account for authentication
+             * but doesn't have a user information record on students table
+             */
+            if($data[0] -> role == 3){
+                $student = Students::find($data[0] -> id);
+                
+                if(!$instructor){
+                    return response()->json([
+                        'status' => 404,
+                        'message' => 'Account exist but user information missing.',
+                    ]);
+                }
+
+                $name = $student['Firstname'].' '.$student['Middlename'].' '.$student['Lastname'];
+
+                $success['role']    =  $data[0] -> role;
+                $success['name']    =  $name;
+                $success['email']   =  $requestData->email;
+                $success['profile'] =  $requestData->profile;
+                $success['loggedIn'] = true;
+
+                return response()->json([
+                    'status' => 200,
+                    'data'=> $success,
+                ]);
+            }
+
+
+            /**
+             * if role is not 2 or 3  
+             * then fetch in admin table
+             * if data not found response status 404 account doesn't exist
+             * means the the user has an account for authentication
+             * but doesn't have a user information record on admin table
+             */
+
+            $admin = Admin::find($data[0] -> id);
+        
+            if(!$admin){
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Account exist but user information missing.',
+                ]);
+            }
+
+            $name = $admin['Firstname'].' '.$admin['Middlename'].' '.$admin['Lastname'];
+
+            $success['role']    =  $data[0] -> role;
+            $success['name']    =  $name;
+            $success['email']   =  $requestData->email;
+            $success['profile'] =  $requestData->profile;
+            $success['loggedIn'] = true;
+
+            return response()->json([
+                'status' => 200,
+                'data'=> $success,
+            ]);
+
+        } catch (\Throwable $th){
+            return response() -> json([
+                'status' => 500,
+                'message' => $th -> getMessage()
+            ]);
+        }
+    }
+
     public function signin(Request $request)
     {
     
            try {
 
+            $json = $request -> body;
+
             $credentials = [
-                'email' => $request -> body['Email'],
-                'password' => $request -> body['Password'],
+                'email' => $json['Email'],
+                'password' => $json['Password'],
             ];
 
             if (!Auth::attempt($credentials)) {    
@@ -53,7 +166,7 @@ class UserController extends Controller
             }
             
             $data = DB::SELECT("SELECT u.id,u.email, u.profile, u.isVerified, r.name as role FROM users u 
-                    JOIN roles r ON r.id = u.FK_role_ID WHERE u.email = ?", [$request -> body['Email']]);
+                    JOIN roles r ON r.id = u.FK_role_ID WHERE u.email = ?", [$json['Email']]);
 
             if(!$data ){
                 return response()->json([
@@ -61,6 +174,7 @@ class UserController extends Controller
                     'message' => 'Account not found.',
                 ]);
             }
+
 
             /**
              * if role is 2 or Instructor 
@@ -81,7 +195,7 @@ class UserController extends Controller
                 
                 $user = Auth::user();
                 $token =  $user->createToken('year_book');
-                $success['token']   =  $token -> accessToken; 
+                $success['token']   =  $token -> plainTextToken; 
                 $success['role']    =  $data[0] -> role;
                 $success['name']    =  $instructor->name;
                 $success['email']   =  $user->email;
@@ -102,7 +216,7 @@ class UserController extends Controller
              * but doesn't have a user information record on students table
              */
             if($data[0] -> role == 3){
-                $student = Students::find();
+                $student = Students::find($data[0] -> id);
                 
                 if(!$instructor){
                     return response()->json([
@@ -113,7 +227,7 @@ class UserController extends Controller
 
                 $user = Auth::user();
                 $token =  $user->createToken('year_book');
-                $success['token']   =  $token -> accessToken; 
+                $success['token']   =  $token -> plainTextToken; 
                 $success['role']    =  $data[0] -> role;
                 $success['name']    =  $student->name;
                 $success['email']   =  $user->email;
@@ -135,7 +249,7 @@ class UserController extends Controller
              * but doesn't have a user information record on admin table
              */
 
-            $admin = Admin::find();
+            $admin = Admin::find($data[0] -> id);
         
             if(!$admin){
                 return response()->json([
@@ -144,11 +258,13 @@ class UserController extends Controller
                 ]);
             }
 
+            $name = $admin['Firstname'].' '.$admin['Middlename'].' '.$admin['Lastname'];
+
             $user = Auth::user();
             $token =  $user->createToken('year_book');
-            $success['token']   =  $token -> accessToken; 
+            $success['token']   =  $token -> plainTextToken; 
             $success['role']    =  $data[0] -> role;
-            $success['name']    =  $admin->name;
+            $success['name']    =  $name;
             $success['email']   =  $user->email;
             $success['profile'] =  $user->profile;
             $success['loggedIn'] = true;
@@ -172,13 +288,15 @@ class UserController extends Controller
     
            try {
 
+            $json = $request -> body;
+
             $user = new User;
 
-            $user ->Email                  = $request->body['Email'];
+            $user ->email                  = $json['Email'];
             $user ->isVerified             = false;
-            $user ->FK_role_ID             = $request->body['role'];
-            $user ->profile                = $request->body['profile'];
-            $user ->Password               = Hash::make($request->body['Password']);
+            $user ->FK_role_ID             = $json['role'];
+            $user ->profile                = $json['profile'];
+            $user ->password               = Hash::make($json['Password']);
             $user ->created_at             = now();
             $user ->updated_at             = now();
             $user ->save();

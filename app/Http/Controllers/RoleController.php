@@ -46,8 +46,8 @@ class RoleController extends Controller
 
             $data ->Name                        = $request->body['Name'];
             $data ->Description                 = $request->body['Description'];
-            $data ->created_at                   = now();
-            $data ->updated_at                   = now();
+            $data ->created_at                  = now();
+            $data ->updated_at                  = now();
             $data ->save();
             
             return response()->json([

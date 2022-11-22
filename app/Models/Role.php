@@ -13,4 +13,6 @@ class Role extends Model
         'Name',
         'Description',
     ];
+    
+    public $timestamps = false;
 }

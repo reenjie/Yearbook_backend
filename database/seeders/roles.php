@@ -17,13 +17,17 @@ class roles extends Seeder
     {
         Role::truncate();
 
-        Role::create(['Name' => 'Admin',
+        Role::create([  'id' => 1,
+                        'Name' => 'Admin',
                         'Description'   => 'System moderator']);
                         
-        Role::create(['Name' => 'Instructor',
+        Role::create([
+                        'id' => 1,
+                        'Name' => 'Instructor',
                         'Description'   => 'Section and batch adviser']);
                                         
-        Role::create(['Name' => 'Students',
+        Role::create([  'id' => 1,
+                        'Name' => 'Students',
                         'Description'   => 'Graduates']);
     }
 }
