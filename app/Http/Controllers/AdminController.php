@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Instructor;
+use App\Models\Admin;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
-class InstructorController extends Controller
+class AdminController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,42 +15,17 @@ class InstructorController extends Controller
     public function index()
     {
         try {
-
-            $data = DB::select('SELECT * FROM `instructors` i JOIN users u on u.id = i.FK_user_ID;');
+            $data = Admin::all();
    
-            return response()->json([
-                'status' => 200,
-                'data' => $data,
-            ]);
+           return response()->json([
+               'status' => 200,
+               'data' => $data,
+           ]);
                
            } catch (\Throwable $th) {
-            return response() -> json([
-                'status' => 500,
-                'message' => $th -> getMessage()
-            ]);
-           }
-    }
-    
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function indexSelection()
-    {
-        try {
-
-            $data = DB::select('SELECT id, Concat(Firstname ," ", Middlename ," ", Lastname ) as name FROM `instructors`;');
-   
             return response()->json([
-                'status' => 200,
-                'data' => $data,
-            ]);
-               
-           } catch (\Throwable $th) {
-            return response() -> json([
-                'status' => 500,
-                'message' => $th -> getMessage()
+                'status'=>500,
+                'message'=>$th -> getMessage(),
             ]);
            }
     }
@@ -64,56 +38,57 @@ class InstructorController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            
+        try{
             $user = new User;
 
             $user ->Email                  = $request->body['Email'];
             $user ->isVerified             = $request->body['isVerified'];
-            $user ->role                   = 2;
+            $user ->role                   = $request->body['role'];
             $user ->profile                = $request->body['profile'];
             $user ->Password               = Hash::make($request->body['Password']);
             $user ->created_at             = now();
             $user ->updated_at             = now();
             $user ->save();
-
-            $data = new Instructor;
-
+    
+            
+            $data = new admin;
+        
             $data ->Firstname              = $request->body['Firstname'];
             $data ->Middlename             = $request->body['Middlename'];
             $data ->Lastname               = $request->body['Lastname'];
-            $data ->Sex                    = $request->body['Sex'];
+            $data ->Contact                = $request->body['Contact'];
             $data ->FK_user_ID             = $user -> id;
-            $data ->Fk_section_ID          = $request->body['FK_section_ID'];
             $data->created_at              = now();
             $data->updated_at              = now();
             $data->save();
-            
+    
+            /**
+             * on success return status 200
+             * user will not redirect to home until his acconut is approve
+             */
             return response()->json([
                 'status' => 200,
-                'message' => 'Added succesfully',
+                'message'=> 'Account added successfuly your account is currently pending',
             ]);
-
-     } catch (\Throwable $th) {
-         return response() -> json([
-             'status' => 500,
-             'message' => $th -> getMessage()
-         ]);
-     }
+        }catch(\Throwable $th){
+            return response()->json([
+                'status'=>500,
+                'message'=>$th -> getMessage(),
+            ]);
+        }
     }
-
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Instructor  $admin
+     * @param  \App\Models\admin  $admin
      * @return \Illuminate\Http\Response
      */
     public function show(Request $request)
     {
         try {
             $id = $request -> params;
-            $data = Instructor::findOrFail($id);
+            $data = Admin::findOrFail($id);
 
             return response()->json([
                 'status' => 200,
@@ -132,50 +107,44 @@ class InstructorController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Instructor  $instructor
+     * @param  \App\Models\admin  $admin
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request)
-    {
-        try {
+    {    
+        try{
 
             $id = $request->params;
-            $data = Instructor::find($id);
-
+            $data = Admin::find($id);
+        
             $data ->Firstname              = $request->body['Firstname'];
             $data ->Middlename             = $request->body['Middlename'];
             $data ->Lastname               = $request->body['Lastname'];
-            $data ->Sex                    = $request->body['Sex'];
-            $data ->FK_user_ID             = $request->body['FK_user_ID'];
-            $data ->updated_at              = now();
-          
+            $data ->Contact                = $request->body['Contact'];
+            $data->updated_at              = now();
             $data->save();
-
+    
+            /**
+             * on success return status 200
+             * user will not redirect to home until his acconut is approve
+             */
             return response()->json([
                 'status' => 200,
-                'message' => 'Updated successfully',
+                'message'=> 'Account updated successfuly ',
             ]);
-            
-        } catch (\Throwable $th) {
+        }catch(\Throwable $th){
             return response() -> json([
-                'status' => 200,
+                'status' => 500,
                 'message' => $th -> getMessage()
             ]);
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Instructor  $instructor
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Request $request)
     {
         try {
-
             $id = $request -> params;
-            $data = User::findOrFail($id);
+            $data = Admin::findOrFail($id);
             $data -> delete();
 
             return response()->json([
@@ -184,10 +153,12 @@ class InstructorController extends Controller
             ]);
             
         } catch (\Throwable $th) {
+
             return response() -> json([
                 'status' => 500,
                 'message' => $th -> getMessage()
             ]);
+        
         }
     }
 }

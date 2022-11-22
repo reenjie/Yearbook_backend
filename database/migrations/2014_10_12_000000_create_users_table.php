@@ -15,23 +15,23 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string("Firstname");
-            $table->string("Lastname");
-            $table->string("Email");
-            $table->string("Contact");
-            $table->string("Gender");
-            $table->string("Address")->nullable();
+            $table->string("email");
             $table->integer("isVerified");
-            $table->integer('Section_ID');
-            $table->integer('Batch_ID'); 
-            $table->integer("Payment"); // 0 = Unpaid | 1 = Paid
-            $table->integer("UserType"); // 0 = Admin | 1 = Instructor | 2 = Clients 
-            $table->integer("firstlogin"); // 0 = true | 1 = false
-            $table->string("Payment_Method")->nullable();
-            $table->text('url')->nullable();
-            $table->string("Password");
+            $table->integer("FK_role_ID");
+            $table->text('profile')->nullable();
+            $table->string("password");
             $table->timestamps();
         });
+    }
+
+    /**
+     * Get the user that owns the 2014_10_12_000000_create_users_table
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(role::class, 'FK_role_ID');
     }
 
     /**

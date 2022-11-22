@@ -10,7 +10,6 @@ class Section extends Model
     use HasFactory;
 
     protected $fillable = [
-        'Batch_ID',
         'Name',
         'Description',
     ];
