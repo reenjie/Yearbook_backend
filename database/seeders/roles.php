@@ -22,11 +22,11 @@ class roles extends Seeder
                         'Description'   => 'System moderator']);
                         
         Role::create([
-                        'id' => 1,
+                        'id' => 2,
                         'Name' => 'Instructor',
                         'Description'   => 'Section and batch adviser']);
                                         
-        Role::create([  'id' => 1,
+        Role::create([  'id' => 3,
                         'Name' => 'Students',
                         'Description'   => 'Graduates']);
     }

@@ -165,7 +165,7 @@ class UserController extends Controller
                 ]);
             }
             
-            $data = DB::SELECT("SELECT u.id,u.email, u.profile, u.isVerified, r.name as role FROM users u 
+            $data = DB::SELECT("SELECT u.id,u.email, u.profile, u.isVerified, r.id as role FROM users u 
                     JOIN roles r ON r.id = u.FK_role_ID WHERE u.email = ?", [$json['Email']]);
 
             if(!$data ){
@@ -249,30 +249,48 @@ class UserController extends Controller
              * but doesn't have a user information record on admin table
              */
 
-            $admin = Admin::find($data[0] -> id);
-        
-            if(!$admin){
+          
+            if($data[0]->role == 1){
+                $admin = Admin::find($data[0] -> id);
+            
+                if(!$admin){
+                    return response()->json([
+                        'status' => 404,
+                        'message' => 'Account exist but user information missing.',
+                        'aw '=>$data[0],
+                       
+                       
+                    ]);
+
+                }
+
+                $name = $admin['Firstname'].' '.$admin['Middlename'].' '.$admin['Lastname'];
+
+                $user = Auth::user();
+                $token =  $user->createToken('year_book');
+                $success['token']   =  $token -> plainTextToken; 
+                $success['role']    =  $data[0] -> role;
+                $success['name']    =  $name;
+                $success['email']   =  $user->email;
+                $success['profile'] =  $user->profile;
+                $success['loggedIn'] = true;
+    
                 return response()->json([
-                    'status' => 404,
-                    'message' => 'Account exist but user information missing.',
+                    'status' => 200,
+                    'data'=> $success,
                 ]);
+    
+
+             
+
             }
+              
 
-            $name = $admin['Firstname'].' '.$admin['Middlename'].' '.$admin['Lastname'];
+              
+        
 
-            $user = Auth::user();
-            $token =  $user->createToken('year_book');
-            $success['token']   =  $token -> plainTextToken; 
-            $success['role']    =  $data[0] -> role;
-            $success['name']    =  $name;
-            $success['email']   =  $user->email;
-            $success['profile'] =  $user->profile;
-            $success['loggedIn'] = true;
+          
 
-            return response()->json([
-                'status' => 200,
-                'data'=> $success,
-            ]);
 
         } catch (\Throwable $th) {
 

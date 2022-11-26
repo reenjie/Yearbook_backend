@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Hash;
 use App\Models\Instructor;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -64,13 +65,14 @@ class InstructorController extends Controller
      */
     public function store(Request $request)
     {
+       
         try {
             
             $user = new User;
 
             $user ->Email                  = $request->body['Email'];
-            $user ->isVerified             = $request->body['isVerified'];
-            $user ->role                   = 2;
+            $user ->FK_role_ID             = 2;
+            $user ->isVerified             = 0;
             $user ->profile                = $request->body['profile'];
             $user ->Password               = Hash::make($request->body['Password']);
             $user ->created_at             = now();

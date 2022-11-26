@@ -10,9 +10,10 @@ class SectionController extends Controller
 {
     public function index()
     {
+        
         try {
 
-            $data = DB::select('SELECT s.id,s.Name,s.Description,CONCAT(i.Firstname, " ",i.Middlename," ",i.Lastname ) as instructor FROM `sections` s join instructors i on i.FK_section_ID = s.id;');
+            $data = Section::all();
    
            return response()->json([
                'status' => 200,
@@ -30,7 +31,7 @@ class SectionController extends Controller
     public function customSelect(){
         try {
 
-            $data = DB::select('select id as value, Name as label from sections');
+            $data = DB::select('select id as id, Name as name from sections');
    
            return response()->json([
                'status' => 200,
@@ -48,8 +49,10 @@ class SectionController extends Controller
   
     public function store(Request $request)
     {
+      
         try {
-
+         
+           
             $section = new Section;
 
             $section ->Name                        = $request->body['Name'];
@@ -58,14 +61,17 @@ class SectionController extends Controller
             $section ->updated_at                   = now();
             $section ->save();
 
+            if($request -> body['FK_instructor_ID']){
+                $id = $request -> body['FK_instructor_ID'];
+                $data = Instructor::find($id);
             
-            $id = $request -> body['FK_instructor_ID'];
-            $data = Instructor::find($id);
-            
-            $data ->FK_section_ID          = $section['id'];
-            $data ->updated_at             = now();
+                $data ->FK_section_ID          = $section->id;
+                $data ->updated_at             = now();
+                
+                $data->save();
+            }
+           
           
-            $data->save();
             
             return response()->json([
                 'status' => 200,
@@ -138,6 +144,7 @@ class SectionController extends Controller
    
     public function destroy(Request $request)
     {
+      
         try {
 
             $id = $request -> params;

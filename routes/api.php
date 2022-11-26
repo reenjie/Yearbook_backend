@@ -72,6 +72,7 @@ Route::middleware('auth:sanctum')->group(function () {
             
         //Session
             Route::get('session', 'SessionController@index');         //Index
+                //
             Route::post('session', 'SessionController@store');        //Create
             /*   Route::get('batch/{id}', 'DoctorController@show');     //Read */
             Route::put('session', 'SessionController@update');        //Update
