@@ -26,10 +26,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::namespace('App\Http\Controllers')->group(function () {   
         //User
             Route::get('users','UserController@checkUserToken');
+            Route::get('Allusers','UserController@index');
+
+            Route::get('Customusers','UserController@CustomUser');
 
         //Batch
             Route::get('batch', 'BatchController@index');         //Index
             Route::get('batch/Custom', 'BatchController@getBatch'); 
+
+            Route::get('batchCustomdate','BatchController@getCustomSelectDates');
         
             
             Route::post('batch', 'BatchController@store');        //Create
@@ -74,6 +79,10 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('session', 'SessionController@index');         //Index
                 //
             Route::post('session', 'SessionController@store');        //Create
+
+
+
+
             /*   Route::get('batch/{id}', 'DoctorController@show');     //Read */
             Route::put('session', 'SessionController@update');        //Update
             Route::delete('session', 'SessionController@destroy');   //delete

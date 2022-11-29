@@ -138,20 +138,18 @@ class InstructorController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request)
-    {
+    {     
         try {
+            $data = User::find($request->params);
+            Instructor::where('FK_user_ID',$data->id)->update([
+                'Firstname'=>$request->body['Firstname'],
+                'Middlename'=>$request->body['Middlename'],
+                'Lastname'=>$request->body['Lastname'],
+                'Sex'=>$request->body['Sex'],
+                'FK_section_ID'=>$request->body['FK_section_ID'],
+            ]);
+            
 
-            $id = $request->params;
-            $data = Instructor::find($id);
-
-            $data ->Firstname              = $request->body['Firstname'];
-            $data ->Middlename             = $request->body['Middlename'];
-            $data ->Lastname               = $request->body['Lastname'];
-            $data ->Sex                    = $request->body['Sex'];
-            $data ->FK_user_ID             = $request->body['FK_user_ID'];
-            $data ->updated_at              = now();
-          
-            $data->save();
 
             return response()->json([
                 'status' => 200,
@@ -173,10 +171,12 @@ class InstructorController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request)
-    {
+    {   
+
+           
         try {
 
-            $id = $request -> params;
+            $id = $request -> id;
             $data = User::findOrFail($id);
             $data -> delete();
 

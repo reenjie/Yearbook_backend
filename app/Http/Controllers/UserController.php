@@ -35,6 +35,29 @@ class UserController extends Controller
            }
     }
 
+    public function CustomUser(){
+        try {
+
+            $data = DB::select("
+            SELECT u.* ,
+            CONCAT(a.Firstname,' ',a.Lastname) as aname,
+            CONCAT(i.Firstname,' ',i.Lastname) as iname 
+            from users u LEFT JOIN admins a on a.FK_user_ID = u.id
+            LEFT JOIN instructors i on i.FK_user_ID = u.id where u.FK_role_ID in (1,2) ");
+   
+           return response()->json([
+               'status' => 200,
+               'data' => $data,
+           ]);
+               
+           } catch (\Throwable $th) {
+                return response()->json([
+                    'status'=>500,
+                    'message'=>$th -> getMessage(),
+                ]);
+           }
+    }
+
     public function checkUserToken(Request $request){
         try{
 

@@ -72,33 +72,34 @@ class StudentController extends Controller
   
     public function store(Request $request)
     {
-           try {
-            $data = new Students;
+       print_r($request);
+        //    try {
+        //     $data = new Students;
 
-            $data ->Firstname              = $request->body['Firstname'];
-            $data ->Lastname               = $request->body['Lastname'];
-            $data ->Email                  = $request->body['Email'];
-            $data ->Contact                = $request->body['Contact'];
-            $data ->Batch_ID               = $request->body['Batch_ID'];
-            $data ->Section_ID             = $request->body['Section_ID'];
-            $data ->Honors                 = $request->body['Honors'];
-            $data ->photo                  = $request->body['photo'];
-            $data ->sex                    = $request->body['sex'];
-            $data->created_at              = now();
-            $data->updated_at              = now();
-            $data->save();
+        //     $data ->Firstname              = $request->body['Firstname'];
+        //     $data ->Lastname               = $request->body['Lastname'];
+        //     $data ->Email                  = $request->body['Email'];
+        //     $data ->Contact                = $request->body['Contact'];
+        //     $data ->Batch_ID               = $request->body['Batch_ID'];
+        //     $data ->Section_ID             = $request->body['Section_ID'];
+        //     $data ->Honors                 = $request->body['Honors'];
+        //     $data ->photo                  = $request->body['photo'];
+        //     $data ->sex                    = $request->body['sex'];
+        //     $data->created_at              = now();
+        //     $data->updated_at              = now();
+        //     $data->save();
             
-            return response()->json([
-                'status' => 200,
-                'message' => 'Added succesfully',
-            ]);
+        //     return response()->json([
+        //         'status' => 200,
+        //         'message' => 'Added succesfully',
+        //     ]);
 
-        } catch (\Throwable $th) {
-            return response() -> json([
-                'status' => 500,
-                'message' => $th -> getMessage()
-            ]);
-        }
+        // } catch (\Throwable $th) {
+        //     return response() -> json([
+        //         'status' => 500,
+        //         'message' => $th -> getMessage()
+        //     ]);
+        // }
     }
 
     

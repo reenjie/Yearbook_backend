@@ -10,6 +10,7 @@ class BatchController extends Controller
     
     public function index()
     {
+        
         try {
 
             $data = Batch::all();
@@ -25,6 +26,22 @@ class BatchController extends Controller
                 'message' => $th -> getMessage(),
             ]);
            }
+    }
+
+    public function getCustomSelectDates(){
+
+          
+            $yearnow = date('Y');
+            $data = [];
+            for ($i=$yearnow; $i >= 2020 ; $i--) { 
+               $data[]= $i;
+            }
+
+            return response()->json([
+                'status' => 200,
+                'data' => $data,
+            ]);
+                
     }
 
     public function getBatch(){
@@ -128,9 +145,11 @@ class BatchController extends Controller
    
     public function destroy(Request $request)
     {
+
+       
         try {
 
-            $id = $request -> params;
+            $id = $request -> id;
             $data = Batch::findOrFail($id);
             $data -> delete();
 
